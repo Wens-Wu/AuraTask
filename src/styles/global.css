@@ -1,0 +1,15 @@
+/*
+ * Stylesheet manifest. The actual rules live in ./parts/*.css.
+ * IMPORT ORDER IS CASCADE ORDER — do not reorder these lines, and add new
+ * rules to the matching domain file (or a new part appended in the right place).
+ */
+@import "./parts/theme.css"; /* :root + dark theme vars/overrides + base reset */
+@import "./parts/layout.css"; /* sidebar, main, window controls */
+@import "./parts/topbar.css"; /* topbar + chips */
+@import "./parts/calendar.css"; /* day / week / month views + mood picker */
+@import "./parts/dialog.css"; /* task dialog + color picker */
+@import "./parts/focus.css"; /* focus timer */
+@import "./parts/habits.css"; /* habits + today-habits */
+@import "./parts/stats.css"; /* stats view */
+@import "./parts/journal.css"; /* standalone records */
+@import "./parts/misc.css"; /* scrollbar */

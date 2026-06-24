@@ -1,0 +1,245 @@
+/* Focus view */
+.focus-wrap {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
+}
+.focus-card {
+  background: var(--surface-raised);
+  border: 0.5px solid var(--hairline);
+  border-radius: 18px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  box-shadow: var(--shadow-md);
+}
+.focus-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+}
+.focus-card-head .icon-btn {
+  position: absolute;
+  right: 0;
+}
+.focus-settings {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.focus-settings .field input {
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface);
+  outline: none;
+}
+.focus-settings .field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.focus-settings-presets {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.focus-settings-presets button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.focus-settings-presets button:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.focus-tabs {
+  display: inline-flex;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 3px;
+}
+.focus-tabs button {
+  padding: 7px 18px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-radius: 6px;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+.focus-tabs button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 500;
+}
+.ring-wrap {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.ring-label .time {
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.ring-label .kind-label {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+.task-picker {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.task-picker label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.task-picker select {
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--surface);
+  outline: none;
+}
+.task-picker select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.focus-actions {
+  display: flex;
+  gap: 10px;
+}
+.primary-btn.big,
+.ghost-btn.big {
+  padding: 10px 22px;
+  font-size: 14px;
+  border-radius: 10px;
+  transition: background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease,
+    transform 0.12s ease;
+}
+.primary-btn.big:active,
+.ghost-btn.big:active {
+  transform: translateY(1px) scale(0.985);
+}
+/* Always render "End" so starting/resetting never reflows the action row;
+   mute + disable it while there is nothing to end. */
+.ghost-btn.big.focus-end {
+  transition: background 0.18s ease, box-shadow 0.18s ease, color 0.18s ease,
+    transform 0.12s ease, opacity 0.22s ease;
+}
+.focus-end:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.focus-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stat-card {
+  background: var(--surface-raised);
+  border: 0.5px solid var(--hairline);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.stat-value {
+  margin-top: 8px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.stat-value span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+.stat-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+.empty-small {
+  margin-top: 12px;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+.session-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.session-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.session-list .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.session-list .time-small {
+  color: var(--text);
+}
+.session-list .dur {
+  margin-left: auto;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+

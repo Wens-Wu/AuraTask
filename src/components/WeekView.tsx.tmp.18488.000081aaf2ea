@@ -1,0 +1,265 @@
+import { useRef, useState, type CSSProperties, type PointerEvent, type RefObject } from "react";
+import type { Task, TimeSlot } from "../types";
+import { TIME_SLOT_ORDER } from "../types";
+import { toISODate, weekDays, weekdayLabel } from "../utils/date";
+import { useSettings } from "../settings";
+
+interface Props {
+  anchor: Date;
+  tasks: Task[];
+  moods: Record<string, string>;
+  onPickDay: (d: Date) => void;
+  onToggle: (t: Task) => void;
+  onEdit: (t: Task) => void;
+  onAddForDay: (d: Date) => void;
+  onMove: (t: Task, dueDate: string, slot: TimeSlot | null) => void;
+}
+
+type DropTarget = { day: string; slot: TimeSlot | null };
+
+/** Resolve which (day × slot) drop zone sits under the cursor; null if none.
+ *  The column header doubles as the all-day target so no band has to appear
+ *  mid-drag (which would shift the layout). */
+function findDropTarget(x: number, y: number): DropTarget | null {
+  for (const el of document.elementsFromPoint(x, y)) {
+    const zone = (el as HTMLElement).closest?.(
+      ".slot-band[data-day], .week-col-head[data-day]",
+    ) as HTMLElement | null;
+    if (zone?.dataset.day) {
+      const slot = zone.dataset.slot;
+      return { day: zone.dataset.day, slot: slot && slot !== "all" ? (slot as TimeSlot) : null };
+    }
+  }
+  return null;
+}
+
+export default function WeekView({
+  anchor,
+  tasks,
+  moods,
+  onPickDay,
+  onToggle,
+  onEdit,
+  onAddForDay,
+  onMove,
+}: Props) {
+  const days = weekDays(anchor);
+  const { isToday } = useSettings();
+  const { t } = useT();
+
+  const [drag, setDrag] = useState<{ task: Task; x: number; y: number } | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+  const suppressClickRef = useRef(false);
+  const dragging = drag !== null;
+
+  // group by day, then by slot ("all-day" key for nullable slot)
+  type DayBuckets = { all: Task[]; bySlot: Record<TimeSlot, Task[]> };
+  const byDay = new Map<string, DayBuckets>();
+  const empty = (): DayBuckets => ({
+    all: [],
+    bySlot: { morning: [], afternoon: [], evening: [] },
+  });
+  for (const t of tasks) {
+    if (!t.due_date) continue;
+    const bucket = byDay.get(t.due_date) ?? empty();
+    if (t.time_slot) bucket.bySlot[t.time_slot].push(t);
+    else bucket.all.push(t);
+    byDay.set(t.due_date, bucket);
+  }
+
+  // Pointer-drag a task across cells to change its day / time slot.
+  // A ≥5px move starts the drag (a smaller move stays a click → edit).
+  const startPress = (e: PointerEvent<HTMLDivElement>, task: Task) => {
+    if (e.button !== 0) return;
+    if ((e.target as HTMLElement).closest("button")) return; // the toggle dot
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let started = false;
+    let cancelled = false;
+    const dropRef = { current: null as DropTarget | null };
+
+    const handleMove = (ev: globalThis.PointerEvent) => {
+      if (!started) {
+        if (Math.hypot(ev.clientX - startX, ev.clientY - startY) < 5) return;
+        started = true;
+        suppressClickRef.current = true;
+      }
+      const target = findDropTarget(ev.clientX, ev.clientY);
+      dropRef.current = target;
+      setDropTarget(target);
+      setDrag({ task, x: ev.clientX, y: ev.clientY });
+    };
+
+    const cleanup = () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("pointercancel", handleUp);
+      window.removeEventListener("keydown", handleKey);
+      setDrag(null);
+      setDropTarget(null);
+      // Release the click guard after this gesture's click has fired.
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    };
+
+    const handleUp = () => {
+      const target = dropRef.current;
+      if (started && !cancelled && target) onMove(task, target.day, target.slot);
+      cleanup();
+    };
+
+    const handleKey = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") {
+        cancelled = true;
+        cleanup();
+      }
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointercancel", handleUp);
+    window.addEventListener("keydown", handleKey);
+  };
+
+  return (
+    <>
+      <div className={`week-grid ${dragging ? "is-dragging" : ""}`}>
+        {days.map((d) => {
+          const key = toISODate(d);
+          const bucket = byDay.get(key) ?? empty();
+          const showAll = bucket.all.length > 0 || dragging;
+          const isAllTarget = dropTarget?.day === key && dropTarget?.slot === null;
+          return (
+            <div
+              key={key}
+              className={`week-col ${isToday(d) ? "today" : ""}`}
+              onClick={() => onPickDay(d)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                onAddForDay(d);
+              }}
+            >
+              <div className="week-col-head">
+                <span className="week-col-day">{d.getDate()}</span>
+                <span className="week-col-label">{weekdayLabel(d)}</span>
+                {moods[key] && <span className="mood-badge">{moods[key]}</span>}
+              </div>
+
+              {showAll && (
+                <div
+                  className={`slot-band slot-all ${bucket.all.length === 0 ? "is-empty" : ""} ${
+                    isAllTarget ? "is-drop-target" : ""
+                  }`}
+                  data-day={key}
+                  data-slot="all"
+                >
+                  {bucket.all.map((t) => (
+                    <WeekTask
+                      key={t.id}
+                      t={t}
+                      dragging={drag?.task.id === t.id}
+                      suppressClickRef={suppressClickRef}
+                      onPointerDown={(e) => startPress(e, t)}
+                      onToggle={onToggle}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                  {bucket.all.length === 0 && (
+                    <span className="slot-placeholder">{t("全天", "All-day")}</span>
+                  )}
+                </div>
+              )}
+
+              {TIME_SLOT_ORDER.map((s) => {
+                const isTarget = dropTarget?.day === key && dropTarget?.slot === s;
+                return (
+                  <div
+                    key={s}
+                    className={`slot-band slot-${s} ${isTarget ? "is-drop-target" : ""}`}
+                    data-day={key}
+                    data-slot={s}
+                  >
+                    {bucket.bySlot[s].map((t) => (
+                      <WeekTask
+                        key={t.id}
+                        t={t}
+                        dragging={drag?.task.id === t.id}
+                        suppressClickRef={suppressClickRef}
+                        onPointerDown={(e) => startPress(e, t)}
+                        onToggle={onToggle}
+                        onEdit={onEdit}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {drag && (
+        <div className="week-task-ghost" style={{ left: drag.x + 12, top: drag.y + 12 }}>
+          <span
+            className="week-task-ghost-dot"
+            style={
+              drag.task.color
+                ? ({ "--task-color": drag.task.color } as CSSProperties)
+                : undefined
+            }
+          />
+          <span className="ellipsis">{drag.task.title}</span>
+        </div>
+      )}
+    </>
+  );
+}
+
+function WeekTask({
+  t,
+  dragging,
+  suppressClickRef,
+  onPointerDown,
+  onToggle,
+  onEdit,
+}: {
+  t: Task;
+  dragging: boolean;
+  suppressClickRef: RefObject<boolean>;
+  onPointerDown: (e: PointerEvent<HTMLDivElement>) => void;
+  onToggle: (t: Task) => void;
+  onEdit: (t: Task) => void;
+}) {
+  const done = !!t.completed_at;
+  // Custom color only while open; completed tasks keep the muted done-style.
+  const style: CSSProperties | undefined =
+    !done && t.color
+      ? ({ color: t.color, "--task-color": t.color } as CSSProperties)
+      : undefined;
+  return (
+    <div
+      className={`week-task ${done ? "done" : ""} ${dragging ? "is-dragging" : ""}`}
+      style={style}
+      data-task-id={t.id}
+      onPointerDown={onPointerDown}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (suppressClickRef.current) return;
+        onEdit(t);
+      }}
+      title="拖动可改时间 · 点击编辑"
+    >
+      <button
+        className={`week-task-toggle ${done ? "checked" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle(t);
+        }}
+        aria-label={done ? "标记未完成" : "标记完成"}
+        title={done ? "标记未完成" : "标记完成"}
+      />
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
+    </div>
+  );
+}

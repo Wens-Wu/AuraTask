@@ -1,0 +1,308 @@
+/* Habits */
+.habit-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.habit-card {
+  background: var(--surface-raised);
+  border: 0.5px solid var(--hairline);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s, transform 0.05s;
+}
+.habit-card:hover {
+  box-shadow: var(--shadow-md);
+}
+.habit-card.archived {
+  opacity: 0.55;
+}
+.habit-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.habit-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.habit-emoji {
+  font-size: 20px;
+}
+.archived-tag {
+  font-size: 11px;
+  color: var(--text-faint);
+  background: var(--surface-2);
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+.habit-stats {
+  display: flex;
+  gap: 18px;
+}
+.habit-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.habit-stats .num {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+}
+.habit-stats .num-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+.habit-stats .lbl {
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.5px;
+}
+.habit-heatmap {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  gap: 3px;
+}
+.heat-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--border);
+  transition: background 0.15s;
+}
+.heat-cell.heat-1 {
+  background: #c7d2fe;
+}
+.heat-cell.heat-2 {
+  background: #818cf8;
+}
+.heat-cell.heat-3 {
+  background: #6366f1;
+}
+.heat-cell.heat-4 {
+  background: #4338ca;
+}
+.heat-cell.is-today {
+  outline: 1.5px solid var(--text);
+  outline-offset: 1px;
+}
+.habit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.habit-actions input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+.habit-actions input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.habit-actions .primary-btn.muted {
+  background: #10b981;
+}
+.emoji-presets {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: -4px;
+}
+.emoji-preset {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  transition: background 0.15s, transform 0.08s;
+}
+.emoji-preset:hover {
+  background: var(--accent-soft);
+}
+.emoji-preset.active {
+  background: var(--accent-soft);
+  outline: 1.5px solid var(--accent);
+  transform: scale(1.08);
+}
+
+/* Day view today-habits section */
+.habit-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  transition: color 0.15s;
+}
+.habit-section-title:hover {
+  color: var(--text-muted);
+}
+.habit-section-caret {
+  display: inline-flex;
+  font-size: 9px;
+  transition: transform 0.15s;
+}
+.habit-section-title.is-collapsed .habit-section-caret {
+  transform: rotate(-90deg);
+}
+.habit-section-count {
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.today-habit-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface-raised);
+  border: 0.5px solid var(--hairline);
+  border-radius: 11px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+}
+.today-habit-strip:hover {
+  box-shadow: var(--shadow-md);
+}
+.today-habit-emoji {
+  font-size: 20px;
+}
+.today-habit-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: auto;
+}
+.today-habit-name .done-chk {
+  color: #10b981;
+  margin-left: 6px;
+}
+.today-habit-target {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+.today-habit-input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  font-size: 13px;
+  outline: none;
+  text-align: right;
+}
+.today-habit-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.today-habit-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border-strong);
+  transition: background 0.15s, color 0.15s;
+}
+.today-habit-btn.done {
+  background: #10b981;
+  color: #fff;
+  border-color: #10b981;
+}
+.today-habit-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.today-habit-btn.done:hover {
+  background: #059669;
+  color: #fff;
+}
+/* Weekly progress chip in the day-view strip */
+.today-habit-week {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-right: 8px;
+}
+
+/* Schedule picker (habit dialog) */
+.weekday-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.weekday-chip {
+  min-width: 38px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.weekday-chip:hover {
+  background: var(--accent-soft);
+}
+.weekday-chip.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.weekly-count-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.weekly-count-row input {
+  width: 90px;
+}
+.weekly-count-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Frequency tag on the habit card */
+.habit-sched-tag {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 1px 8px;
+  border-radius: 999px;
+  margin-left: 4px;
+}
+
