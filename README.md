@@ -29,8 +29,10 @@ AuraTask folds the handful of things you do every day — planning tasks, focusi
 | `Ctrl + 2` | Later inbox |
 | `Ctrl + 3` | Habits |
 | `Ctrl + 4` | Records |
-| `Ctrl + 5` | Focus timer |
-| `Ctrl + 6` | Statistics |
+| `Ctrl + 5` | Daily goals |
+| `Ctrl + 6` | Focus timer |
+| `Ctrl + 7` | Statistics |
+| `Ctrl + /` · `F1` | Guide / shortcuts |
 | `Esc` | Close dialog |
 
 ## Tech stack

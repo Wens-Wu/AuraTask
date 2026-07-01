@@ -272,15 +272,15 @@ export default function App() {
         setShowAdd(true);
         return;
       }
-      // Ctrl+1..5 switch primary nav
+      // Ctrl+1..7 switch primary nav, in sidebar order.
       const map: Record<string, ViewMode> = {
         "1": lastCalendarView,
         "2": "inbox",
         "3": "habits",
         "4": "journal",
-        "5": "focus",
-        "6": "stats",
-        "7": "goals",
+        "5": "goals",
+        "6": "focus",
+        "7": "stats",
       };
       if (map[e.key]) {
         e.preventDefault();
